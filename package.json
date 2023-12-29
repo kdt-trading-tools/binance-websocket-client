@@ -1,6 +1,6 @@
 {
     "name": "@kdt-trading-tools/binance-websocket-client",
-    "version": "0.0.0",
+    "version": "0.0.1",
     "description": "A websocket client for Binance exchange",
     "license": "MIT",
     "author": "Diep Dang <khangdt310722@gmail.com>",
