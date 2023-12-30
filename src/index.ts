@@ -1,5 +1,5 @@
+export * from './base-websocket-client'
 export * from './constants'
 export * from './errors'
 export * from './types'
 export * from './utils'
-export * from './websocket-client'

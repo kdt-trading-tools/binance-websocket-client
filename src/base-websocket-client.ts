@@ -8,7 +8,7 @@ import { type Market, baseTestnetUrls, baseUrls, maxStreamsPerConnection } from 
 import { WebsocketStore, chunkStreams } from './utils'
 import { WebsocketClientError } from './errors'
 
-export class WebsocketClient extends TypedEventEmitter<WebsocketClientEvents> {
+export class BaseWebsocketClient extends TypedEventEmitter<WebsocketClientEvents> {
     protected readonly baseUrl: string
     protected readonly store: WebsocketStore
     protected readonly requestTimeout: number
