@@ -1,11 +1,12 @@
 import { TypedEventEmitter } from '@khangdt22/utils/event'
 import { WebsocketClient as Client } from '@khangdt22/utils/ws'
 import { isNull } from '@khangdt22/utils/condition'
-import { isKeyOf } from '@khangdt22/utils/object'
+import { isKeyOf, isObject } from '@khangdt22/utils/object'
 import { unique, difference, chunk, intersection } from '@khangdt22/utils/array'
 import type { WebsocketClientEvents, WebsocketClientOptions, Method, MethodArgs, MethodReturnType } from './types'
 import { type Market, baseTestnetUrls, baseUrls, maxStreamsPerConnection } from './constants'
 import { WebsocketStore, chunkStreams } from './utils'
+import { WebsocketClientError } from './errors'
 
 export class WebsocketClient extends TypedEventEmitter<WebsocketClientEvents> {
     protected readonly baseUrl: string
@@ -132,7 +133,7 @@ export class WebsocketClient extends TypedEventEmitter<WebsocketClientEvents> {
     }
 
     protected async onMessage(id: number, message: string) {
-        const data = JSON.parse(message)
+        const data = this.parseMessage(message, id)
         const context = this.store.get(id)
 
         if (this.store.hasRequest(id, data.id)) {
@@ -141,8 +142,16 @@ export class WebsocketClient extends TypedEventEmitter<WebsocketClientEvents> {
 
         this.emit('message', data, id, context)
 
-        if (isKeyOf(data, 'stream')) {
+        if (isObject(data) && isKeyOf(data, 'stream')) {
             this.emit('stream', data.stream, data.data, id, context)
+        }
+    }
+
+    protected parseMessage(message: string, id: number) {
+        try {
+            return JSON.parse(message)
+        } catch (error) {
+            throw new WebsocketClientError(id, this.store.get(id), `Failed to parse message: ${message}`, { cause: error })
         }
     }
 
